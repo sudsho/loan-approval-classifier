@@ -1,0 +1,38 @@
+data:
+  train_path: data/train.csv
+  target: Loan_Status
+  drop_cols:
+    - Loan_ID
+
+split:
+  test_size: 0.2
+  random_state: 42
+  stratify: true
+
+preprocess:
+  numeric_features:
+    - ApplicantIncome
+    - CoapplicantIncome
+    - LoanAmount
+    - Loan_Amount_Term
+    - Credit_History
+  categorical_features:
+    - Gender
+    - Married
+    - Dependents
+    - Education
+    - Self_Employed
+    - Property_Area
+  numeric_imputer: median
+  categorical_imputer: most_frequent
+
+model:
+  type: random_forest
+  params:
+    n_estimators: 100
+    max_depth: 6
+    random_state: 42
+
+artifacts:
+  model_path: artifacts/model.pkl
+  preproc_path: artifacts/preprocessor.pkl
