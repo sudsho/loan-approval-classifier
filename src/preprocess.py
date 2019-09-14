@@ -36,8 +36,13 @@ def basic_clean(df):
 
 def impute_missing(df):
     df = df.copy()
+    # Credit_History is numeric in the csv but really a 0/1 flag, treat as categorical for fill
     for c in NUMERIC_COLS:
-        if c in df.columns:
+        if c not in df.columns:
+            continue
+        if c == 'Credit_History':
+            df[c] = df[c].fillna(df[c].mode()[0])
+        else:
             df[c] = df[c].fillna(df[c].median())
     for c in CATEGORICAL_COLS:
         if c in df.columns:
