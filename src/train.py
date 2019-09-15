@@ -4,6 +4,12 @@ import argparse
 import yaml
 import joblib
 
+from sklearn.metrics import (
+    accuracy_score,
+    classification_report,
+    confusion_matrix,
+)
+
 from src.data import load_dataset, split
 from src.preprocess import (
     impute_missing,
@@ -46,8 +52,13 @@ def main():
     model = get_model(cfg['model']['type'], cfg['model'].get('params'))
     model.fit(X_train_enc, y_train_enc)
 
-    score = model.score(X_test_enc, y_test_enc)
-    print('test accuracy: %.4f' % score)
+    preds = model.predict(X_test_enc)
+    acc = accuracy_score(y_test_enc, preds)
+    print('test accuracy: %.4f' % acc)
+    print('confusion matrix:')
+    print(confusion_matrix(y_test_enc, preds))
+    print('classification report:')
+    print(classification_report(y_test_enc, preds, target_names=['N', 'Y']))
 
     out_dir = os.path.dirname(cfg['artifacts']['model_path'])
     if out_dir and not os.path.exists(out_dir):
