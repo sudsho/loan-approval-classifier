@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Result</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="container">
+    <h1>Result</h1>
+    <p class="result">Prediction: <strong>{{ prediction }}</strong></p>
+    <h3>Inputs</h3>
+    <ul>
+    {% for k, v in fields.items() %}
+      <li><b>{{ k }}</b>: {{ v }}</li>
+    {% endfor %}
+    </ul>
+    <a href="/">Back</a>
+  </div>
+</body>
+</html>
