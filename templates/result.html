@@ -9,6 +9,9 @@
   <div class="container">
     <h1>Result</h1>
     <p class="result">Prediction: <strong>{{ prediction }}</strong></p>
+    {% if probability is not none %}
+    <p>Probability of approval: {{ '%.2f' % probability }}</p>
+    {% endif %}
     <h3>Inputs</h3>
     <ul>
     {% for k, v in fields.items() %}
