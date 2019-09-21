@@ -52,7 +52,7 @@ def impute_missing(df):
 
 def encode_categoricals(df, encoders=None):
     df = df.copy()
-    fitted = {}
+    fitted = {} if encoders is None else dict(encoders)
     for c in CATEGORICAL_COLS:
         if c not in df.columns:
             continue
@@ -60,8 +60,10 @@ def encode_categoricals(df, encoders=None):
             le = encoders[c]
             # fall back to most frequent for unseen labels
             most_common = le.classes_[0]
-            df[c] = df[c].apply(lambda x: x if x in le.classes_ else most_common)
-            df[c] = le.transform(df[c].astype(str))
+            df[c] = df[c].astype(str).apply(
+                lambda x: x if x in set(le.classes_) else most_common
+            )
+            df[c] = le.transform(df[c])
         else:
             le = LabelEncoder()
             df[c] = le.fit_transform(df[c].astype(str))
