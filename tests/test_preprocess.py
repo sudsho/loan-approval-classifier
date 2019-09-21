@@ -50,3 +50,25 @@ def test_encode_target():
     y = pd.Series(['Y', 'N', 'Y', 'N'])
     enc = encode_target(y)
     assert enc.tolist() == [1, 0, 1, 0]
+
+
+def test_encode_handles_unseen_label():
+    train = pd.DataFrame({
+        'Gender': ['Male', 'Female', 'Male'],
+        'Married': ['Yes', 'No', 'Yes'],
+        'Dependents': ['0', '1', '2'],
+        'Education': ['Graduate', 'Graduate', 'Graduate'],
+        'Self_Employed': ['No', 'No', 'Yes'],
+        'Property_Area': ['Urban', 'Rural', 'Urban'],
+    })
+    _, encoders = encode_categoricals(train)
+    new = pd.DataFrame({
+        'Gender': ['Other'],  # unseen
+        'Married': ['Yes'],
+        'Dependents': ['0'],
+        'Education': ['Graduate'],
+        'Self_Employed': ['No'],
+        'Property_Area': ['Urban'],
+    })
+    enc, _ = encode_categoricals(new, encoders=encoders)
+    assert enc.shape[0] == 1
