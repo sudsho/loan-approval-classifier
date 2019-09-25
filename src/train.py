@@ -3,6 +3,7 @@ import os
 import argparse
 import yaml
 import joblib
+import pandas as pd
 
 from sklearn.metrics import (
     accuracy_score,
@@ -32,6 +33,10 @@ def main():
         cfg = yaml.safe_load(f)
 
     df = load_dataset(cfg['data']['train_path'])
+
+    # ensure numeric dtype on Credit_History (csv sometimes loads it as object)
+    if 'Credit_History' in df.columns:
+        df['Credit_History'] = pd.to_numeric(df['Credit_History'], errors='coerce')
 
     X_train, X_test, y_train, y_test = split(
         df,
