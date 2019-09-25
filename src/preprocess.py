@@ -31,6 +31,9 @@ def basic_clean(df):
     # drop loan id, it's just an identifier
     if 'Loan_ID' in df.columns:
         df = df.drop(columns=['Loan_ID'])
+    # Dependents has '3+' which we keep as a string-category, but normalise
+    if 'Dependents' in df.columns:
+        df['Dependents'] = df['Dependents'].astype(str).str.strip()
     return df
 
 
