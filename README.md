@@ -1,8 +1,11 @@
 # loan-approval-classifier
 
+[![Build Status](https://travis-ci.org/sudsho/loan-approval-classifier.svg?branch=master)](https://travis-ci.org/sudsho/loan-approval-classifier)
+
 Binary classifier for the Loan Prediction problem from Analytics Vidhya. The
 goal is to predict whether a loan application will be approved (`Y`) or
-rejected (`N`) based on applicant attributes.
+rejected (`N`) given applicant attributes such as income, credit history,
+education, and property area.
 
 ## Dataset
 
@@ -13,13 +16,51 @@ rejected (`N`) based on applicant attributes.
   ApplicantIncome, CoapplicantIncome, LoanAmount, Loan_Amount_Term,
   Credit_History, Property_Area.
 
+The CSV is committed under `data/train.csv` for convenience.
+
+## EDA highlights
+
+See `notebooks/eda.ipynb`. Key takeaways:
+
+- Target is imbalanced, ~69% `Y` vs ~31% `N`. A naive always-`Y` baseline
+  already scores ~69% accuracy, so the headline number to chase is F1 or
+  balanced accuracy, not raw accuracy.
+- Several columns have missing values. The worst offenders are
+  `Credit_History`, `Self_Employed`, and `LoanAmount`.
+- `ApplicantIncome` and `CoapplicantIncome` are heavily right-skewed, so a
+  log transform helps any linear model.
+- `Credit_History` is by far the strongest single predictor of approval.
+
 ## Approach
 
-1. EDA in `notebooks/eda.ipynb`
+1. EDA in `notebooks/eda.ipynb`.
 2. Preprocess: median impute numeric, mode impute categorical, label encode.
-3. Try LogisticRegression, RandomForest, GradientBoosting via `sklearn`.
-4. Train and serialize with `joblib`.
-5. Serve through a small Flask web form.
+3. Try `LogisticRegression`, `RandomForestClassifier`,
+   `GradientBoostingClassifier` from scikit-learn.
+4. Train and serialize the chosen model with `joblib`.
+5. Serve predictions through a small Flask web form.
+
+## Results
+
+5-fold cross-validation accuracy on the training data:
+
+| model              | accuracy |
+|--------------------|----------|
+| LogisticRegression | ~0.80    |
+| RandomForest       | ~0.79    |
+| GradientBoosting   | ~0.78    |
+
+Held-out test classification report (RandomForest, default config):
+
+```
+              precision    recall  f1-score   support
+           N       0.92      0.46      0.61        37
+           Y       0.79      0.98      0.87        86
+    accuracy                           0.82       123
+```
+
+The classifier is conservative on rejections because the dataset is skewed
+toward approvals.
 
 ## Quickstart
 
@@ -29,18 +70,29 @@ python -m src.train --config configs/default.yaml
 python app.py
 ```
 
-Then open `http://localhost:5000`.
+Then open `http://localhost:5000` and fill out the form.
+
+## Deploy on Heroku
+
+```bash
+heroku create my-loan-app
+git push heroku master
+```
+
+The included `Procfile` runs the app under `gunicorn`, and `runtime.txt`
+pins Python 3.7.
 
 ## Project layout
 
 ```
 .
-├── app.py
+├── app.py                  # Flask web app
 ├── configs/default.yaml
 ├── data/train.csv
 ├── notebooks/eda.ipynb
 ├── src/
 │   ├── data.py
+│   ├── evaluate.py
 │   ├── model.py
 │   ├── predict.py
 │   ├── preprocess.py
@@ -49,8 +101,19 @@ Then open `http://localhost:5000`.
 ├── templates/
 │   ├── form.html
 │   └── result.html
-└── tests/
+├── tests/
+├── Procfile
+├── runtime.txt
+└── .travis.yml
 ```
+
+## Tests
+
+```bash
+pytest -q
+```
+
+CI is set up through Travis (see `.travis.yml`).
 
 ## License
 
