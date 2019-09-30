@@ -1,0 +1,10 @@
+{
+  "name": "loan-approval-classifier",
+  "description": "Flask app that scores Analytics Vidhya loan-prediction inputs.",
+  "repository": "https://github.com/sudsho/loan-approval-classifier",
+  "keywords": ["python", "flask", "scikit-learn", "ml"],
+  "env": {
+    "MODEL_PATH": {"value": "artifacts/model.pkl"},
+    "PREPROC_PATH": {"value": "artifacts/preprocessor.pkl"}
+  }
+}
