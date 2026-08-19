@@ -17,6 +17,7 @@ from src.preprocess import (
     encode_categoricals,
     encode_target,
     TARGET,
+    FEATURE_ORDER,
 )
 from src.model import get_model
 
@@ -50,6 +51,10 @@ def main():
 
     X_train_enc, encoders = encode_categoricals(X_train)
     X_test_enc, _ = encode_categoricals(X_test, encoders=encoders)
+
+    # fit on the canonical column order so the serving path matches exactly
+    X_train_enc = X_train_enc[FEATURE_ORDER]
+    X_test_enc = X_test_enc[FEATURE_ORDER]
 
     y_train_enc = encode_target(y_train)
     y_test_enc = encode_target(y_test)

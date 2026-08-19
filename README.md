@@ -62,7 +62,43 @@ Held-out test classification report (RandomForest, default config):
 The classifier is conservative on rejections because the dataset is skewed
 toward approvals.
 
-## Quickstart
+## Quick start (runs offline)
+
+No network, no downloads. The training CSV is committed under `data/train.csv`,
+and the smoke falls back to a synthesized loan-approval-schema frame if that
+file is ever missing, so it always has data to work with.
+
+```bash
+python scripts/smoke.py    # or: make smoke
+```
+
+Real output:
+
+```
+=== loan-approval-classifier offline smoke ===
+data source : bundled data/train.csv
+rows / cols : 333 / 12
+test accuracy : 0.7463
+test roc auc  : 0.8010
+saved model   : artifacts\model.pkl
+predict_one   : label=1 (Approved), proba=0.8564
+flask /predict : status=200, verdict=Approved
+SMOKE OK
+```
+
+The smoke trains the classifier (prints accuracy and ROC AUC), saves the model
+and encoders under `artifacts/`, then exercises the serving path two ways: a
+direct call to `src.predict.predict_one` and a Flask test-client `POST /predict`,
+asserting a valid label and probability from each.
+
+Tests:
+
+```bash
+python -m pytest -q
+# 16 passed
+```
+
+## Full training and web UI (optional)
 
 ```bash
 pip install -r requirements.txt
@@ -70,7 +106,9 @@ python -m src.train --config configs/default.yaml
 python app.py
 ```
 
-Then open `http://localhost:5000` and fill out the form.
+Then open `http://localhost:5000` and fill out the form. The bundled
+`data/train.csv` is a 333-row sample of the Analytics Vidhya set; swap in the
+full 614-row CSV for the headline numbers quoted below.
 
 ## Deploy on Heroku
 

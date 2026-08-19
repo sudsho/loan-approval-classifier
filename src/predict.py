@@ -6,11 +6,8 @@ from src.preprocess import (
     impute_missing,
     encode_categoricals,
     NUMERIC_COLS,
-    CATEGORICAL_COLS,
+    FEATURE_ORDER,
 )
-
-
-FEATURE_ORDER = CATEGORICAL_COLS + NUMERIC_COLS
 
 
 def load_artifacts(model_path, preproc_path):

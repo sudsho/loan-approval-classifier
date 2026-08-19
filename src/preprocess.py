@@ -22,6 +22,11 @@ CATEGORICAL_COLS = [
 
 TARGET = 'Loan_Status'
 
+# Canonical feature column order used at both train and predict time. The model
+# is fit on columns in this exact order, so serving must build its frame the
+# same way (sklearn checks feature name order at predict time).
+FEATURE_ORDER = CATEGORICAL_COLS + NUMERIC_COLS
+
 
 def load_csv(path):
     return pd.read_csv(path)
